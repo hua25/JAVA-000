@@ -1,0 +1,10 @@
+.history
+.idea
+
+# node
+package.json
+package-lock.json
+node_modules
+
+*.class
+*.jar

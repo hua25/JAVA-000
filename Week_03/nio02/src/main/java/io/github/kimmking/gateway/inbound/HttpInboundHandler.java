@@ -1,6 +1,7 @@
 package io.github.kimmking.gateway.inbound;
 
-import io.github.kimmking.gateway.outbound.httpclient4.HttpOutboundHandler;
+import io.github.kimmking.gateway.outbound.OutBoundHandler;
+import io.github.kimmking.gateway.outbound.netty4.NettyHttpOutboundHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -10,15 +11,17 @@ import org.slf4j.LoggerFactory;
 
 public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
 
-    private static Logger logger = LoggerFactory.getLogger(HttpInboundHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(HttpInboundHandler.class);
     private final String proxyServer;
-    private HttpOutboundHandler handler;
-    
+    private final OutBoundHandler handler;
+
     public HttpInboundHandler(String proxyServer) {
         this.proxyServer = proxyServer;
-        handler = new HttpOutboundHandler(this.proxyServer);
+//        handler = new HttpOutboundHandler(this.proxyServer);
+//        handler = new OkhttpOutboundHandler(this.proxyServer);
+        handler = new NettyHttpOutboundHandler(this.proxyServer);
     }
-    
+
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
         ctx.flush();
@@ -34,10 +37,9 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
 //            if (uri.contains("/test")) {
 //                handlerTest(fullRequest, ctx);
 //            }
-    
+
             handler.handle(fullRequest, ctx);
-    
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             ReferenceCountUtil.release(msg);

@@ -1,5 +1,6 @@
 .history
 .idea
+*.iml
 
 # node
 package.json
